@@ -955,6 +955,9 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
 
         if (timestamp < rewardsCycleEnd) revert SyncError();
 
+        //Call report.....talks to strategy and gets money back temporary 
+        //transferFundsBackFromStrategy....
+
         uint256 storedTotalAssets_ = storedTotalAssets;
         uint256 nextRewards = asset.balanceOf(address(this)) - storedTotalAssets_ - lastRewardAmount_;
 
@@ -970,6 +973,8 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
         lastRewardAmount = nextRewards.safeCastTo192();
         lastSync = timestamp;
         rewardsCycleEnd = end;
+
+       //transferFundsToStrategy...Only transfer....
 
         emit NewRewardsCycle(end, nextRewards);
     }
@@ -1070,14 +1075,17 @@ pragma solidity 0.8.20;
     mint() - deposit targeting a specific number of ssgETH out
     deposit() - deposit knowing a specific number of ssgETH in */
 contract SSGETH is xERC4626, ReentrancyGuard {
+    using SafeTransferLib for ERC20; 
 
     address governor; 
 
     address strategy;
 
-    uint256 underlying;
-
     bool deprecated; 
+
+    ERC20 underlyingAsset;
+
+    uint256 MAX_INT = 2**256 - 1;
 
     modifier isDeprecated() //If isDeprecated is true....the vault is deprecated
     {
@@ -1096,7 +1104,7 @@ contract SSGETH is xERC4626, ReentrancyGuard {
         require(msg.sender == strategy, "Not the strategy");
         _;
     }
-
+//make sure that reward sync happens after the cycle end
     modifier andSync() {
         if (block.timestamp >= rewardsCycleEnd) {
             syncRewards();
@@ -1105,13 +1113,14 @@ contract SSGETH is xERC4626, ReentrancyGuard {
     }
 
     /* ========== CONSTRUCTOR ========== */
-    constructor( ERC20 _underlying, uint32 _rewardsCycleLength, address _strategy, address _governor)
+    constructor( ERC20 _underlying, uint32 _rewardsCycleLength, address _governor)
         ERC4626(_underlying, "Staked SharedStake Governed Ether", "ssgETH")
         xERC4626(_rewardsCycleLength)
     {
         governor = _governor; //Set the governor...
-        strategy = _strategy; //Set the strategy...
         deprecated = false;
+        underlyingAsset = _underlying;
+        //_underlying.approve(strategy, MAX_INT);
     }
 
     //Need function to deprecate this vault
@@ -1120,18 +1129,29 @@ contract SSGETH is xERC4626, ReentrancyGuard {
         deprecated = dep;
     }
 
-
-    //Need function for strategy to take assets from vault
-        //Strategy calls it from this contract
-
-    //Need function for strategy to send assets back to vault
-        //Strategy calls it from this contract
-    
-
-    //Need report function 
-    function report(uint256 balance) public onlyStrategy andSync
+//Safetransfer to strategy...
+     //Non-standard - called by the strategy to transfer all funds to the strategy. 
+    function transferFundsToStrategy() public onlyStrategy()
     {
-        underlying = balance;
+        require( strategy != address(0), "No strategy in place");
+
+        underlyingAsset.safeTransfer(strategy, totalAssets()); //transfer all of the underlying funds to the strategy
+    }
+
+
+ // NOTE: The vault strategy contract MUST call an approval for all its assets before calling this function
+    //Called by the strategy to transfer all funds to this vault and update underlying
+    function transferFundsBackFromStrategy() public onlyStrategy()
+    {
+        //strategy.withdrawAll(); //unZap from strategy....and call safeTransferFrom On strategy itself....
+        
+       // underlyingAsset.safeTransferFrom(msg.sender, address(this), balOfStrategy); //transfer from the strategy (msg.sender) to this contract, all of the strategy's assets
+    }
+
+    //Change the strategy address - GOVERANCE
+    function changeStrategy(address newStrat) public onlyGovernance 
+    {
+        strategy = newStrat;
     }
 
     /// @notice inlines syncRewards with deposits when able
@@ -1181,4 +1201,5 @@ contract SSGETH is xERC4626, ReentrancyGuard {
         asset.permit(msg.sender, address(this), amount, deadline, v, r, s);
         return (deposit(assets, receiver));
     }
+
 }
