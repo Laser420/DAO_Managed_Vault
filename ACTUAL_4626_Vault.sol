@@ -1113,7 +1113,7 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
 
     /* ========== CONSTRUCTOR ========== */
     constructor( ERC20 _underlying, uint32 _rewardsCycleLength, address _governor)
-        ERC4626(_underlying, "Staked SharedStake Governed Ether", "ssgETH")
+        ERC4626(_underlying, "Silly Vault", "svETH")
         xERC4626(_rewardsCycleLength)
     {
         governor = _governor; //Set the governor...
@@ -1131,7 +1131,7 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
 
 //Safetransfer to strategy...
      //Non-standard - called by the strategy to transfer all funds to the strategy. 
-    function transferFundsToStrategy() public onlyStrategy()
+    function transferFundsToStrategy() internal
     {
         require( strategy != address(0), "No strategy in place");
 
@@ -1143,7 +1143,7 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
 
  // NOTE: The vault strategy contract MUST call an approval for all its assets before calling this function
     //Called by the strategy to transfer all funds to this vault and update underlying
-    function transferFundsBackFromStrategy() public onlyStrategy()
+    function transferFundsBackFromStrategy() internal
     {
         strategyInterface.withdrawAll(); //unZap from strategy..
     }
@@ -1152,6 +1152,7 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
     function changeStrategy(address newStrat) public onlyGovernance 
     {
         strategy = newStrat;
+        strategyInterface = ISillyStrategy(strategy); //Set the interface
     }
 
     /// @notice inlines syncRewards with deposits when able
@@ -1184,7 +1185,7 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
 
     /// @notice How much sgETH is 1E18 ssgETH worth. Price is in ETH, not USD
     function pricePerShare() public view returns (uint256) {
-        return convertToAssets(1e18);
+        return convertToAssets(1e18); /// concern
     }
 
     /// @notice Approve and deposit() in one transaction
