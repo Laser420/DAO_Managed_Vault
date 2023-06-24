@@ -1210,9 +1210,10 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
 
         if (timestamp < rewardsCycleEnd) revert SyncError();
 
-        //Call report.....talks to strategy and gets money back temporary 
-        //transferFundsBackFromStrategy....
-
+        //talk to strategy and gets money back temporary 
+        transferFundsBackFromStrategy();
+        
+        //Continue the math for shares...
         uint256 storedTotalAssets_ = storedTotalAssets;
         uint256 nextRewards = asset.balanceOf(address(this)) - storedTotalAssets_ - lastRewardAmount_;
 
@@ -1229,7 +1230,8 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
         lastSync = timestamp;
         rewardsCycleEnd = end;
 
-       //transferFundsToStrategy...Only transfer....
+        //Sends all funds back into the strategy
+        transferFundsToStrategy();
 
         emit NewRewardsCycle(end, nextRewards);
     }
