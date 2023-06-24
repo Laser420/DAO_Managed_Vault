@@ -3,10 +3,10 @@
 
 pragma solidity ^0.8.19;
 
-import "../ERC20.sol";
-import "../utils/SafeERC20.sol";
-import "../../../interfaces/IERC4626.sol";
-import "../../../utils/math/Math.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/utils/SafeERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/interfaces/IERC4626.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/Math.sol";
 
 /**
  * @dev Implementation of the ERC4626 "Tokenized Vault Standard" as defined in
@@ -48,6 +48,37 @@ import "../../../utils/math/Math.sol";
  * _Available since v4.7._
  */
 abstract contract ERC4626 is ERC20, IERC4626 {
+
+    /* Things to add:
+            *Vault Management* 
+                Vault is managed by an address 
+                To propose a strategy....a user must prove credentials using sismo ->
+                Sismo gives them an ERC20 which allow them to propose strategies ->
+                Then we use delv to allow vault holders to vote on these strategies ->
+                If a strategy passes....Unknown what entity calls a function BUT ->
+                We need to figure out how to send assets to a new strategy....
+
+                MAYBE MAYBE MAYBE...an erc4626 factory that deploys a new custom 4626....
+                And then use the router to move assets between 4626s....
+                But this provides the same issue.....how do we allow the DAO to deploy custom contracts
+
+                Delv needs: allow anyone with vault receipt tokens to vote 
+                BUT only allow wallets from a particular sismo group access to proposals...
+
+                Sismo needs: create groups for people with certain qualifications...
+                Frontending SOMEHOW (maybe using Delv voting frontend to allow people to 
+                make proposals)
+
+                Concern: proposals seem to need calldata.....Im not even sure if I know how to 
+                generate calldata for the deployment of a new strategy...let alone investors
+                We'd A. need to figure out how to do it outselves and B. template it for others
+
+
+    
+    */
+        
+
+
     using Math for uint256;
 
     IERC20 private immutable _asset;
