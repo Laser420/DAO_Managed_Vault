@@ -55,6 +55,10 @@ abstract contract ERC4626 is ERC20, IERC4626 {
     uint256 underlying_in_strategy;
 
     address governor; 
+    address newGovernor;
+
+    address strategy;
+    address newStrategy;
 
     /**
      * @dev Set the underlying asset contract. This must be an ERC20-compatible contract (ERC20 or ERC777).
@@ -71,12 +75,12 @@ abstract contract ERC4626 is ERC20, IERC4626 {
 
            //Make sure only the operator can use a given function
     modifier onlyGovernance() {
-        require(msg.sender == operator, "You aren't the operator.");
+        require(msg.sender == governor, "You aren't the operator.");
         _;
     }
         //Make sure only the address set in the newOperator variable can use a given function
     modifier onlyNewGovernance() {
-        require(msg.sender == newOperator, "You aren't the new operator.");
+        require(msg.sender == newGovernor, "You aren't the new operator.");
         _;
     }
         //Make sure only the vault's strategy contract can call this function
@@ -92,14 +96,14 @@ abstract contract ERC4626 is ERC20, IERC4626 {
     }
 
      //Non-standard - set the newOperator address - called by the current vault operator
-    function setNewGovernance(address op) public onlyGovernance()
+    function setNewGovernance(address gov) public onlyGovernance()
     {
-     newOperator = op;
+     newGovernor = gov;
     }
 
     //Non-standard - called by the newOperator address to officialy take over control as the new vault operator
     function changeToNewGoverance() public onlyNewGovernance(){
-        operator = newOperator;
+        governor = newGovernor;
     }
 
     function beginStrategyChangeStrat(address newStrat) public onlyStrategy()
@@ -107,7 +111,7 @@ abstract contract ERC4626 is ERC20, IERC4626 {
       newStrategy = newStrat;
     }
 
-    function beginStrategyChangeOp(address newStrat) public onlyOperator()
+    function beginStrategyChangeOp(address newStrat) public onlyGovernance()
     {
       newStrategy = newStrat;
     }
@@ -121,17 +125,7 @@ abstract contract ERC4626 is ERC20, IERC4626 {
                      STRATEGY ACCESSED FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    //Non-standard - called by the strategy to transfer all funds to the strategy. 
-    function transferFundsToStrategy() public onlyStrategy()
-    {
-        _updateUnderlying(); //make sure we have the right underlying value before transferring back
-
-    }
- 
-    function transferFundsBackFromStrategy(uint256 strategyBal) public onlyStrategy()
-    {
-       
-    }
+    //
 
         
     /*//////////////////////////////////////////////////////////////
@@ -250,6 +244,9 @@ abstract contract ERC4626 is ERC20, IERC4626 {
     }    
 
 
+    /*//////////////////////////////////////////////////////////////
+                        DEPOSIT/WITHDRAW FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
 
     /** @dev See {IERC4626-deposit}. */
     function deposit(uint256 assets, address receiver) public virtual returns (uint256) {
@@ -368,4 +365,9 @@ abstract contract ERC4626 is ERC20, IERC4626 {
     function _decimalsOffset() internal view virtual returns (uint8) {
         return 0;
     }
+
+    /*//////////////////////////////////////////////////////////////
+                        How did you get this far??
+    I've listened to Obama and Biden AI voices singing Boys a Liar for the past two hours.
+    //////////////////////////////////////////////////////////////*/
 }
