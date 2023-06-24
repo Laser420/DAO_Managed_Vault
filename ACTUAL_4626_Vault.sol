@@ -955,9 +955,6 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
 
         if (timestamp < rewardsCycleEnd) revert SyncError();
 
-        //Call report.....talks to strategy and gets money back temporary 
-        //transferFundsBackFromStrategy....
-
         uint256 storedTotalAssets_ = storedTotalAssets;
         uint256 nextRewards = asset.balanceOf(address(this)) - storedTotalAssets_ - lastRewardAmount_;
 
@@ -973,8 +970,6 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
         lastRewardAmount = nextRewards.safeCastTo192();
         lastSync = timestamp;
         rewardsCycleEnd = end;
-
-       //transferFundsToStrategy...Only transfer....
 
         emit NewRewardsCycle(end, nextRewards);
     }
@@ -1059,27 +1054,31 @@ abstract contract ReentrancyGuard {
     }
 }
 
+pragma solidity ^0.8.20;
+
+interface ISillyStrategy {
+    //Only callable by the vault...
+    function withdrawAll() external;
+
+    //Only callable by the vault
+    function enterPosition() external;
+}
+
 // File contracts/v2/core/SSGEth.sol
 // License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.20;
 
-/// @title ssgETH - Vault token for staked sgETH. ERC20 + ERC4626
-/// @author @ChimeraDefi - sharedstake.org - based on sfrxETH
-/// @notice Is a vault that takes sgETH and gives you ssgETH erc20 tokens
-/** @dev Exchange rate between sgETH and ssgETH floats, you can convert your ssgETH for more sgETH over time.
-    Exchange rate increases as validator rewardSplitter mints new sgETH corresponding to the staking yield and drops it into this vault (ssgETH contract).
-    There is a short time period, “cycles” which the exchange rate increases linearly over. This is to prevent gaming the exchange rate (MEV).
-    The cycles are constant length, but calling syncRewards slightly into a would-be cycle keeps the same would-be endpoint (so cycle ends are every X seconds).
-    Someone must call syncRewards, which queues any new ssgETH in the contract to be added to the redeemable amount.
-    Mint vs Deposit
-    mint() - deposit targeting a specific number of ssgETH out
-    deposit() - deposit knowing a specific number of ssgETH in */
-contract SSGETH is xERC4626, ReentrancyGuard {
+/// Im slowly using control over my own typing
+contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
     using SafeTransferLib for ERC20; 
+    using SafeCastLib for *;
 
     address governor; 
 
     address strategy;
+
+    //interface to the strategy
+    ISillyStrategy strategyInterface = ISillyStrategy(strategy);
 
     bool deprecated; 
 
@@ -1123,6 +1122,7 @@ contract SSGETH is xERC4626, ReentrancyGuard {
         //_underlying.approve(strategy, MAX_INT);
     }
 
+
     //Need function to deprecate this vault
     function deprecateVault(bool dep) public onlyGovernance 
     {
@@ -1135,7 +1135,9 @@ contract SSGETH is xERC4626, ReentrancyGuard {
     {
         require( strategy != address(0), "No strategy in place");
 
-        underlyingAsset.safeTransfer(strategy, totalAssets()); //transfer all of the underlying funds to the strategy
+        underlyingAsset.safeTransfer(strategy, totalAssets()); //transfer all of the funds to the strategy
+
+        //strategy.zapIntoPosition();
     }
 
 
@@ -1143,7 +1145,7 @@ contract SSGETH is xERC4626, ReentrancyGuard {
     //Called by the strategy to transfer all funds to this vault and update underlying
     function transferFundsBackFromStrategy() public onlyStrategy()
     {
-        //strategy.withdrawAll(); //unZap from strategy....and call safeTransferFrom On strategy itself....
+       // strategy.withdrawAll(); //unZap from strategy....and call safeTransferFrom On strategy itself....
         
        // underlyingAsset.safeTransferFrom(msg.sender, address(this), balOfStrategy); //transfer from the strategy (msg.sender) to this contract, all of the strategy's assets
     }
@@ -1200,6 +1202,38 @@ contract SSGETH is xERC4626, ReentrancyGuard {
         uint256 amount = approveMax ? type(uint256).max : assets;
         asset.permit(msg.sender, address(this), amount, deadline, v, r, s);
         return (deposit(assets, receiver));
+    }
+
+    /// @notice Distributes rewards to xERC4626 holders.
+    /// All surplus `asset` balance of the contract over the internal balance becomes queued for the next cycle.
+    function syncRewards() public virtual override {
+        uint192 lastRewardAmount_ = lastRewardAmount;
+        uint32 timestamp = block.timestamp.safeCastTo32();
+
+        if (timestamp < rewardsCycleEnd) revert SyncError();
+
+        //Call report.....talks to strategy and gets money back temporary 
+        //transferFundsBackFromStrategy....
+
+        uint256 storedTotalAssets_ = storedTotalAssets;
+        uint256 nextRewards = asset.balanceOf(address(this)) - storedTotalAssets_ - lastRewardAmount_;
+
+        storedTotalAssets = storedTotalAssets_ + lastRewardAmount_; // SSTORE
+
+        uint32 end = ((timestamp + rewardsCycleLength) / rewardsCycleLength) * rewardsCycleLength;
+
+        if (end - timestamp < rewardsCycleLength / 20) {
+            end += rewardsCycleLength;
+        }
+
+        // Combined single SSTORE
+        lastRewardAmount = nextRewards.safeCastTo192();
+        lastSync = timestamp;
+        rewardsCycleEnd = end;
+
+       //transferFundsToStrategy...Only transfer....
+
+        emit NewRewardsCycle(end, nextRewards);
     }
 
 }
