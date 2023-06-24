@@ -1137,7 +1137,7 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
 
         underlyingAsset.safeTransfer(strategy, totalAssets()); //transfer all of the funds to the strategy
 
-        //strategy.zapIntoPosition();
+        strategyInterface.enterPosition();
     }
 
 
@@ -1145,9 +1145,7 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
     //Called by the strategy to transfer all funds to this vault and update underlying
     function transferFundsBackFromStrategy() public onlyStrategy()
     {
-       // strategy.withdrawAll(); //unZap from strategy....and call safeTransferFrom On strategy itself....
-        
-       // underlyingAsset.safeTransferFrom(msg.sender, address(this), balOfStrategy); //transfer from the strategy (msg.sender) to this contract, all of the strategy's assets
+        strategyInterface.withdrawAll(); //unZap from strategy..
     }
 
     //Change the strategy address - GOVERANCE
