@@ -48,41 +48,95 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contr
  * _Available since v4.7._
  */
 abstract contract ERC4626 is ERC20, IERC4626 {
-
-    /* Things to add:
-            *Vault Management* 
-                Vault is managed by an address 
-                To propose a strategy....a user must prove credentials using sismo ->
-                Sismo gives them an ERC20 which allow them to propose strategies ->
-                Then we use delv to allow vault holders to vote on these strategies ->
-                If a strategy passes....Unknown what entity calls a function BUT ->
-                We need to figure out how to send assets to a new strategy....
-
-                MAYBE MAYBE MAYBE...an erc4626 factory that deploys a new custom 4626....
-                And then use the router to move assets between 4626s....
-                But this provides the same issue.....how do we allow the DAO to deploy custom contracts
-
-                Delv needs: allow anyone with vault receipt tokens to vote 
-                BUT only allow wallets from a particular sismo group access to proposals...
-
-                Sismo needs: create groups for people with certain qualifications...
-                Frontending SOMEHOW (maybe using Delv voting frontend to allow people to 
-                make proposals)
-
-                Concern: proposals seem to need calldata.....Im not even sure if I know how to 
-                generate calldata for the deployment of a new strategy...let alone investors
-                We'd A. need to figure out how to do it outselves and B. template it for others
-
-
-    
-    */
-        
-
-
     using Math for uint256;
-
     IERC20 private immutable _asset;
     uint8 private immutable _underlyingDecimals;
+
+    uint256 underlying_in_strategy;
+
+    address governor; 
+
+    /**
+     * @dev Set the underlying asset contract. This must be an ERC20-compatible contract (ERC20 or ERC777).
+     */
+    constructor(IERC20 asset_) {
+        (bool success, uint8 assetDecimals) = _tryGetAssetDecimals(asset_);
+        _underlyingDecimals = success ? assetDecimals : 18;
+        _asset = asset_;
+    } 
+
+    /*//////////////////////////////////////////////////////////////
+                        MODIFIERS
+    //////////////////////////////////////////////////////////////*/
+
+           //Make sure only the operator can use a given function
+    modifier onlyGovernance() {
+        require(msg.sender == operator, "You aren't the operator.");
+        _;
+    }
+        //Make sure only the address set in the newOperator variable can use a given function
+    modifier onlyNewGovernance() {
+        require(msg.sender == newOperator, "You aren't the new operator.");
+        _;
+    }
+        //Make sure only the vault's strategy contract can call this function
+     modifier onlyStrategy() {
+        require(msg.sender == strategy, "You aren't the current vault strategy");
+        _;
+    }
+
+       //Make sure only the vault's strategy contract can call this function
+     modifier onlyNewStrategy() {
+        require(msg.sender == newStrategy, "You aren't the new vault strategy");
+        _;
+    }
+
+     //Non-standard - set the newOperator address - called by the current vault operator
+    function setNewGovernance(address op) public onlyGovernance()
+    {
+     newOperator = op;
+    }
+
+    //Non-standard - called by the newOperator address to officialy take over control as the new vault operator
+    function changeToNewGoverance() public onlyNewGovernance(){
+        operator = newOperator;
+    }
+
+    function beginStrategyChangeStrat(address newStrat) public onlyStrategy()
+    {
+      newStrategy = newStrat;
+    }
+
+    function beginStrategyChangeOp(address newStrat) public onlyOperator()
+    {
+      newStrategy = newStrat;
+    }
+
+    function completeStrategyChange() public onlyNewStrategy()
+    {
+      strategy = msg.sender;
+    }
+
+    /*//////////////////////////////////////////////////////////////
+                     STRATEGY ACCESSED FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+
+    //Non-standard - called by the strategy to transfer all funds to the strategy. 
+    function transferFundsToStrategy() public onlyStrategy()
+    {
+        _updateUnderlying(); //make sure we have the right underlying value before transferring back
+
+    }
+ 
+    function transferFundsBackFromStrategy(uint256 strategyBal) public onlyStrategy()
+    {
+       
+    }
+
+        
+    /*//////////////////////////////////////////////////////////////
+                        ERRORS N SECURITY STUFF
+    //////////////////////////////////////////////////////////////*/
 
     /**
      * @dev Attempted to deposit more assets than the max amount for `receiver`.
@@ -103,15 +157,6 @@ abstract contract ERC4626 is ERC20, IERC4626 {
      * @dev Attempted to redeem more shares than the max amount for `receiver`.
      */
     error ERC4626ExceededMaxRedeem(address owner, uint256 shares, uint256 max);
-
-    /**
-     * @dev Set the underlying asset contract. This must be an ERC20-compatible contract (ERC20 or ERC777).
-     */
-    constructor(IERC20 asset_) {
-        (bool success, uint8 assetDecimals) = _tryGetAssetDecimals(asset_);
-        _underlyingDecimals = success ? assetDecimals : 18;
-        _asset = asset_;
-    }
 
     /**
      * @dev Attempts to fetch the asset decimals. A return value of false indicates that the attempt failed in some way.
@@ -139,6 +184,10 @@ abstract contract ERC4626 is ERC20, IERC4626 {
     function decimals() public view virtual override(IERC20Metadata, ERC20) returns (uint8) {
         return _underlyingDecimals + _decimalsOffset();
     }
+
+    /*//////////////////////////////////////////////////////////////
+                        VIEWS FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
 
     /** @dev See {IERC4626-asset}. */
     function asset() public view virtual returns (address) {
@@ -198,7 +247,9 @@ abstract contract ERC4626 is ERC20, IERC4626 {
     /** @dev See {IERC4626-previewRedeem}. */
     function previewRedeem(uint256 shares) public view virtual returns (uint256) {
         return _convertToAssets(shares, Math.Rounding.Down);
-    }
+    }    
+
+
 
     /** @dev See {IERC4626-deposit}. */
     function deposit(uint256 assets, address receiver) public virtual returns (uint256) {
@@ -212,6 +263,7 @@ abstract contract ERC4626 is ERC20, IERC4626 {
 
         return shares;
     }
+
 
     /** @dev See {IERC4626-mint}.
      *
