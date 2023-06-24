@@ -1128,7 +1128,7 @@ interface ISillyVault is IxERC4626 {
 
 pragma solidity ^0.8.20;
 
-contract Stategy {
+contract SillyStategyTemplate {
     using SafeTransferLib for ERC20;
     
     address vaultAddress;
@@ -1152,16 +1152,26 @@ contract Stategy {
     function withdrawAll() public onlyVault
     {
         unZapFromPosition();
+        //Send funds back to vault
     }
 
+    function enterPosition() public onlyVault
+    {
+        //Receives funds from the vault before the call of this function
+        zapIntoPosition();
+    }
+
+
+    //Layer various Defi Lego steps to zap into a yield position
     function zapIntoPosition() internal
     {
-        //Empty....
+        //As empty as my eyes after 36 hours of travel
     }
 
+    //Layer various Defi Lego steps to unZap from a yield position
     function unZapFromPosition() internal
     {
-        //Empty....
+        //Emptier than my verbal filter at 3:00AM
     }
 
 }
