@@ -1131,7 +1131,7 @@ pragma solidity ^0.8.20;
 contract SillyStategyTemplate {
     using SafeTransferLib for ERC20;
     
-    address vaultAddress;
+    address public vaultAddress;
 
     ERC20 asset;
 
