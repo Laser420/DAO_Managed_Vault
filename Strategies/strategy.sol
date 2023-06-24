@@ -1151,8 +1151,9 @@ contract SillyStategyTemplate {
 
     function withdrawAll() public onlyVault
     {
-        unZapFromPosition();
-        //Send funds back to vault
+        unZapFromPosition(); 
+        uint256 stratBal = asset.balanceOf(address(this));
+        asset.safeTransfer(vaultAddress, stratBal);
     }
 
     function enterPosition() public onlyVault
