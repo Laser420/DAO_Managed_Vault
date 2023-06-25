@@ -33,6 +33,9 @@ And for slightly more experiemced users to create new vaults with alpha and rese
 The solution allows faster iteration of yield bearing vaults and the permissionless creation of these even in the absence of core-devs maintaining the protocol. 
 
 # Impl
+
+![](daoframework.drawio.png)
+
 1. Frontend uses sismo and/or world coin starter kits
 2. It uses sismo connect or idkit to verify a user is real
 3. If the user is unique, we mint a governance token
