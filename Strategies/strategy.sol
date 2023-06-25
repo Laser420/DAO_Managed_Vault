@@ -1132,6 +1132,7 @@ contract SillyStategyTemplate {
     using SafeTransferLib for ERC20;
     
     address public vaultAddress;
+    uint inited; 
 
     ERC20 asset;
 
@@ -1144,6 +1145,13 @@ contract SillyStategyTemplate {
     {
         vaultAddress = _vaultAddress;
         asset = _asset;
+    }
+
+    function init(ERC20 _asset, address _vaultAddress) external {
+        require(inited == 0);
+        vaultAddress = _vaultAddress;
+        asset = _asset;
+        inited = 1;
     }
 
     //The address of the swap router
@@ -1187,4 +1195,25 @@ contract SillyStategyTemplate {
         //Emptier than my verbal filter at 3:00AM
     }
 
+    function clone(ERC20 _asset, address _vault) external returns (address) {
+        return _clone(_asset, _vault);
+    }
+
+    function _clone(
+        ERC20 _asset, address _vaultAddress
+    ) internal returns (address newStrategy) {
+        // Copied from https://github.com/optionality/clone-factory/blob/master/contracts/CloneFactory.sol
+        bytes20 addressBytes = bytes20(address(this));
+
+        assembly {
+            // EIP-1167 bytecode
+            let clone_code := mload(0x40)
+            mstore(clone_code, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
+            mstore(add(clone_code, 0x14), addressBytes)
+            mstore(add(clone_code, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
+            newStrategy := create(0, clone_code, 0x37)
+        }
+
+        SillyStategyTemplate(newStrategy).init(_asset, _vaultAddress);
+    }
 }
