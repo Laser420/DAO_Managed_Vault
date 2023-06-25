@@ -3393,9 +3393,9 @@ pragma solidity ^0.8.0;
 abstract contract ERC20Wrapper is ERC20 {
     IERC20 private immutable _underlying;
 
-    constructor(IERC20 underlyingToken) {
-        require(underlyingToken != this, "ERC20Wrapper: cannot self wrap");
-        _underlying = underlyingToken;
+    constructor(address underlyingToken) {
+        require(IERC20(underlyingToken) != this, "ERC20Wrapper: cannot self wrap");
+        _underlying = IERC20(underlyingToken);
     }
 
     /**
@@ -3847,7 +3847,7 @@ pragma solidity ^0.8.2;
 
 contract VaultTokenWrapped is ERC20, ERC20Permit, ERC20Votes, ERC20Wrapper {
     constructor(
-        IERC20 wrappedToken
+        address wrappedToken
     ) ERC20("SillyVaultGovernance", "SVG") ERC20Permit("SillyVaultGovernance") ERC20Wrapper(wrappedToken) {}
 
     // The functions below are overrides required by Solidity.

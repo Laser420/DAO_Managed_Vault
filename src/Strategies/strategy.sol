@@ -1141,16 +1141,17 @@ contract SillyStategyTemplate {
         _;
     }
 
-    constructor(ERC20 _asset, address _vaultAddress)
+    constructor(address _asset, address _vaultAddress)
     {
         vaultAddress = _vaultAddress;
-        asset = _asset;
+        asset = ERC20(_asset);
+        inited = 1;
     }
 
-    function init(ERC20 _asset, address _vaultAddress) external {
+    function init(address _asset, address _vaultAddress) external {
         require(inited == 0);
         vaultAddress = _vaultAddress;
-        asset = _asset;
+        asset = ERC20(_asset);
         inited = 1;
     }
 
@@ -1195,12 +1196,12 @@ contract SillyStategyTemplate {
         //Emptier than my verbal filter at 3:00AM
     }
 
-    function clone(ERC20 _asset, address _vault) external returns (address) {
+    function clone(address _asset, address _vault) external returns (address) {
         return _clone(_asset, _vault);
     }
 
     function _clone(
-        ERC20 _asset, address _vaultAddress
+        address _asset, address _vaultAddress
     ) internal returns (address newStrategy) {
         // Copied from https://github.com/optionality/clone-factory/blob/master/contracts/CloneFactory.sol
         bytes20 addressBytes = bytes20(address(this));

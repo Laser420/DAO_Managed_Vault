@@ -4,6 +4,8 @@ pragma solidity ^0.8.13;
 import "forge-std/Script.sol";
 import "forge-std/console.sol";
 import "../../src/Vault4626.sol";
+import {SillyStategyTemplate} from "../../src/Strategies/strategy.sol";
+import {VaultTokenWrapped} from "../../src/Governance/VaultTokenWrapped.sol";
 
 contract Deploy is Script {
     // Test accounts from passphrase in env (not in repo)
@@ -18,6 +20,14 @@ contract Deploy is Script {
         // Deploy guardian factory
         Vault4626 factory = new Vault4626(0x2C1b868d6596a18e32E61B901E4060C872647b6C, 60, 0x4f2bD410B81Ea24F83D1E807511BAec204c4Cf7a);
         factory.addGovernor(0x7E3Ee99EC9b2aBd42c8c8504dc8195C8dc4942D0);
+
+        SillyStategyTemplate sfac = new SillyStategyTemplate(0x2C1b868d6596a18e32E61B901E4060C872647b6C, address(factory));
+        factory.changeStrategy(address(sfac));
+
+        VaultTokenWrapped mtw = new VaultTokenWrapped(address(factory));
+        
         console.log("Vault4626 Factory deployed: ", address(factory));
+        console.log("Strat Factory deployed: ", address(sfac));
+        console.log("Vault4626 Factory deployed: ", address(mtw));
     }
 }
