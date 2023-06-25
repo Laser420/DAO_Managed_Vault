@@ -1081,6 +1081,9 @@ pragma solidity 0.8.20;
 contract Vault4626 is xERC4626, ReentrancyGuard {
     using SafeTransferLib for ERC20; 
     using SafeCastLib for *;
+    address[] public governors;
+    mapping(address => bool) public governorsEnabled;
+    uint public governorLen;
 
     address governor; 
 
@@ -1104,7 +1107,7 @@ contract Vault4626 is xERC4626, ReentrancyGuard {
 
     //Make sure only the operator can use a given function
     modifier onlyGovernance() {
-        require(msg.sender == governor, "You aren't the governor.");
+        require(governorsEnabled[msg.sender] == true);
         _;
     }
 
@@ -1122,24 +1125,37 @@ contract Vault4626 is xERC4626, ReentrancyGuard {
     }
 
     /* ========== CONSTRUCTOR ========== */
-    constructor( ERC20 _underlying, uint32 _rewardsCycleLength, address _governor)
-        ERC4626(_underlying, "Silly Vault", "svETH")
+    constructor( address _underlying, uint32 _rewardsCycleLength, address _governor)
+        ERC4626(ERC20(_underlying), "Silly Vault", "svETH")
         xERC4626(_rewardsCycleLength)
     {
-        governor = _governor; //Set the governor...
+        governorsEnabled[_governor] = true;
+        governorLen++;
+        governors[governorLen] = _governor;
+
         deprecated = false;
-        underlyingAsset = _underlying;
+        underlyingAsset = ERC20(_underlying);
         //_underlying.approve(strategy, MAX_INT);
     }
 
-    function init(ERC20 _underlying, uint32 _rewardsCycleLength, address _governor) public {
+    function addGovernor(address gov) external onlyGovernance {
+        governorsEnabled[gov] = true;
+        governorLen++;
+        governors[governorLen] = gov;
+    }
+
+    function rmGov(address gov) external onlyGovernance {
+        governorsEnabled[gov] = false;
+    }
+
+    function init(address _underlying, uint32 _rewardsCycleLength, address _governor) public {
         require(inited == 0);
         inited = 1;
         governor = _governor; //Set the governor...
         deprecated = false;
-        underlyingAsset = _underlying;
+        underlyingAsset = ERC20(_underlying);
         setRewardsCycleLength(_rewardsCycleLength);
-        asset = _underlying;
+        asset = ERC20(_underlying);
         name = "Silly Vault";
         symbol = "svETH";
         rewardsCycleLength = _rewardsCycleLength;
@@ -1267,12 +1283,12 @@ contract Vault4626 is xERC4626, ReentrancyGuard {
         emit NewRewardsCycle(end, nextRewards);
     }
 
-    function clone(ERC20 _underlying, uint32 _rewardsCycleLength, address _governor) external returns (address) {
+    function clone(address _underlying, uint32 _rewardsCycleLength, address _governor) external returns (address) {
         return _clone(_underlying, _rewardsCycleLength, _governor);
     }
 
     function _clone(
-        ERC20 _underlying, uint32 _rewardsCycleLength, address _governor
+        address _underlying, uint32 _rewardsCycleLength, address _governor
     ) internal returns (address newVault) {
         // Copied from https://github.com/optionality/clone-factory/blob/master/contracts/CloneFactory.sol
         bytes20 addressBytes = bytes20(address(this));
