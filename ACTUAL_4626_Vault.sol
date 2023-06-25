@@ -606,7 +606,7 @@ abstract contract ERC4626 is ERC20 {
                                IMMUTABLES
     //////////////////////////////////////////////////////////////*/
 
-    ERC20 public asset;
+    ERC20 public immutable asset;
 
     constructor(
         ERC20 _asset,
@@ -895,7 +895,7 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
     using SafeCastLib for *;
 
     /// @notice the maximum length of a rewards cycle
-    uint32 public rewardsCycleLength;
+    uint32 public immutable rewardsCycleLength;
 
     /// @notice the effective start of the current cycle
     uint32 public lastSync;
@@ -909,12 +909,6 @@ abstract contract xERC4626 is IxERC4626, ERC4626 {
     uint256 internal storedTotalAssets;
 
     constructor(uint32 _rewardsCycleLength) {
-        rewardsCycleLength = _rewardsCycleLength;
-        // seed initial rewardsCycleEnd
-        rewardsCycleEnd = (block.timestamp.safeCastTo32() / rewardsCycleLength) * rewardsCycleLength;
-    }
-
-    function setRewardsCycleLength(uint32 _rewardsCycleLength) internal {
         rewardsCycleLength = _rewardsCycleLength;
         // seed initial rewardsCycleEnd
         rewardsCycleEnd = (block.timestamp.safeCastTo32() / rewardsCycleLength) * rewardsCycleLength;
@@ -1092,7 +1086,6 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
     bool deprecated; 
 
     ERC20 underlyingAsset;
-    uint inited;
 
     uint256 MAX_INT = 2**256 - 1;
 
@@ -1132,19 +1125,9 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
         //_underlying.approve(strategy, MAX_INT);
     }
 
-    function init(ERC20 _underlying, uint32 _rewardsCycleLength, address _governor) public {
-        require(inited == 0);
-        inited = 1;
-        governor = _governor; //Set the governor...
-        deprecated = false;
-        underlyingAsset = _underlying;
-        setRewardsCycleLength(_rewardsCycleLength);
-        asset = _underlying;
-        name = "Silly Vault";
-        symbol = "svETH";
-        rewardsCycleLength = _rewardsCycleLength;
-        // seed initial rewardsCycleEnd
-        rewardsCycleEnd = (block.timestamp.safeCastTo32() / rewardsCycleLength) * rewardsCycleLength;
+    function changeGovernor(address newGov) public onlyGovernance
+    {
+        governor = newGov;
     }
 
 
@@ -1267,25 +1250,4 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
         emit NewRewardsCycle(end, nextRewards);
     }
 
-    function clone(ERC20 _underlying, uint32 _rewardsCycleLength, address _governor) external returns (address) {
-        return _clone(_underlying, _rewardsCycleLength, _governor);
-    }
-
-    function _clone(
-        ERC20 _underlying, uint32 _rewardsCycleLength, address _governor
-    ) internal returns (address newVault) {
-        // Copied from https://github.com/optionality/clone-factory/blob/master/contracts/CloneFactory.sol
-        bytes20 addressBytes = bytes20(address(this));
-
-        assembly {
-            // EIP-1167 bytecode
-            let clone_code := mload(0x40)
-            mstore(clone_code, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
-            mstore(add(clone_code, 0x14), addressBytes)
-            mstore(add(clone_code, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
-            newVault := create(0, clone_code, 0x37)
-        }
-
-        SillyVault_iHateSwans(newVault).init(_underlying, _rewardsCycleLength, _governor);
-    }
 }
