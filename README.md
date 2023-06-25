@@ -74,7 +74,7 @@ Optional: Verify the contract on Etherscan.
 7. Deploy vault_governor_flattened 
 	Constructor:
 	 Set the underlying to be the wrapped vault token.
-	 Set the timelock to be 0x00000s0s0s0s0s0s0s0FUCK
+	 Set the timelock to be 0x00000.....(0x00 address)
   Verify contract if neccessary 
 
 8. Create the governor on tally using the right addresses n whatnot...
