@@ -66,14 +66,22 @@ Optional: Verify the strategy on etherscan.
 Optional: Call syncRewards on the ACTUAL4626 to simply move assets from the vault into the strategy.
 
 # Projects Incorporated:
-
+## Deployed on
 - Linea
 - Polygon zkEVM
-- Gnosis Chiadao
+
+## Using RPC
 - Quicknode
+
+## Deployed To
+- Gnosis Chiadao
+
+## Deployed With
 - Delv
-- Worldcoin
+
+## Credentials Powered By
 - Sismo
+- Worldcoin
 
 5. Deploy a vaultTokenWrapperFlattened - 0x261ED1EAE1829e18728088cc72C9459cD551AC2F
 	Constructor:
