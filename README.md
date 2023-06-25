@@ -71,6 +71,7 @@ Note: Care is and must continue to be taken to ensure safety against ERC4626 inf
 ### Credentials Powered By
 - Sismo
 - Worldcoin
+- Apecoin
 
 # Dev Docs
 ## Deployment Stages
