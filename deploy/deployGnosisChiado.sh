@@ -1,0 +1,1 @@
+forge script script/DeployGnosisChiado.s.sol:Deploy --rpc-url "https://rpc.chiadochain.net" --sender $SENDER --private-key $WALLET_PRIVATE_KEY --broadcast -vvvv

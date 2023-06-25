@@ -7,7 +7,7 @@ pragma solidity >=0.8.0;
 // flattened xERC4626 from fei-protocol/erc4626
 // underlying solmate libs have been audited
 
-/// @notice Modern and gas efficient ERC20 + EIP-2612 implementation.
+/// @notice crappy and gas efficient ERC20 + EIP-2612 implementation.
 /// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/tokens/ERC20.sol)
 /// @author Modified from Uniswap (https://github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2ERC20.sol)
 /// @dev Do not manually set balances without updating totalSupply, as the sum of all user balances must not exceed it.
@@ -609,11 +609,11 @@ abstract contract ERC4626 is ERC20 {
     ERC20 public asset;
 
     constructor(
-        ERC20 _asset,
+        address _asset,
         string memory _name,
         string memory _symbol
-    ) ERC20(_name, _symbol, _asset.decimals()) {
-        asset = _asset;
+    ) ERC20(_name, _symbol, 18) {
+        asset = ERC20(_asset);
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -1126,22 +1126,23 @@ contract Vault4626 is xERC4626, ReentrancyGuard {
 
     /* ========== CONSTRUCTOR ========== */
     constructor( address _underlying, uint32 _rewardsCycleLength, address _governor)
-        ERC4626(ERC20(_underlying), "Silly Vault", "svETH")
+        ERC4626(_underlying, "Silly Vault", "svETH")
         xERC4626(_rewardsCycleLength)
     {
         governorsEnabled[_governor] = true;
+        governors.push(_governor);
         governorLen++;
-        governors[governorLen] = _governor;
 
         deprecated = false;
         underlyingAsset = ERC20(_underlying);
+        inited = 1;
         //_underlying.approve(strategy, MAX_INT);
     }
 
     function addGovernor(address gov) external onlyGovernance {
         governorsEnabled[gov] = true;
+        governors.push(gov);
         governorLen++;
-        governors[governorLen] = gov;
     }
 
     function rmGov(address gov) external onlyGovernance {
