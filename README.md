@@ -83,20 +83,21 @@ Optional: Verify the strategy on etherscan.
       Deposit into the vault and receive share tokens.
 Optional: Call syncRewards on the ACTUAL4626 to simply move assets from the vault into the strategy.
 
-5. Deploy a vaultTokenWrapperFlattened - 0x261ED1EAE1829e18728088cc72C9459cD551AC2F
+4. Deploy a vaultTokenWrapperFlattened - 0x261ED1EAE1829e18728088cc72C9459cD551AC2F
 	Constructor:
 	 Use the ACTUAL4626 Vault receipt token as the underlying token to wrap.
 Optional: Verify the contract on Etherscan.
 
-6. Approve the vaultTokenWrapperFlattened on the ACTUAL4626.
+5. Approve the vaultTokenWrapperFlattened on the ACTUAL4626.
    
-7. Wrap the vault receipt token into the vault token wrapper by calling depositFor.
+6. Wrap the vault receipt token into the vault token wrapper by calling depositFor.
 
-8. Deploy vault_governor_flattened 
+7. Deploy vault_governor_flattened 
 	Constructor:
 	 Set the underlying to be the wrapped vault token.
 	 Set the timelock to be 0x00000.....(0x00 address)
   Verify contract if neccessary 
 
-9. Create the governor on tally using the right addresses n whatnot...
-10. Call changeGovernor on Etherscan using the EOA to change the vault governor to the governor contract
+8. Create the governor on tally or Delv using the right addresses n whatnot...
+9. Add the given governor to the list of pre-approved governors....
+10. The DAO can then vote to remove the EOA governor from the list. 
