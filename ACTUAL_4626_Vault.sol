@@ -1220,7 +1220,7 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
 
         //talk to strategy and gets money back temporary 
         //*Probably dont need this because we can withdraw particular amounts...
-        //transferFundsBackFromStrategy();
+        transferFundsBackFromStrategy();
         
         //Continue the math for shares...
         uint256 storedTotalAssets_ = storedTotalAssets;
