@@ -1151,26 +1151,38 @@ contract SillyStategyTemplate {
 
     function withdrawAll() public onlyVault
     {
-        unZapFromPosition(); 
+        //To unzap we will need to check and use strategies balance of receipt tokens
+        //unZapFromPosition(); 
+
         uint256 stratBal = asset.balanceOf(address(this));
         asset.safeTransfer(vaultAddress, stratBal);
+    }
+
+    function withdrawParticular(uint256 amount) public onlyVault
+    {
+        //Unzap the amount specified by the vault.
+        //unZapFromPosition(amount); 
+        
+        //Transfer this particular amount to the vault.
+        asset.safeTransfer(vaultAddress, amount);
     }
 
     function enterPosition() public onlyVault
     {
         //Receives funds from the vault before the call of this function
-        zapIntoPosition();
+        uint256 amount = asset.balanceOf(address(this));
+        zapIntoPosition(amount);
     }
 
 
     //Layer various Defi Lego steps to zap into a yield position
-    function zapIntoPosition() internal
+    function zapIntoPosition(uint256 amount) internal
     {
         //As empty as my eyes after 36 hours of travel
     }
 
     //Layer various Defi Lego steps to unZap from a yield position
-    function unZapFromPosition() internal
+    function unZapFromPosition(uint256 amount) internal
     {
         //Emptier than my verbal filter at 3:00AM
     }
