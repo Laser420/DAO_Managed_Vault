@@ -53,11 +53,11 @@ Note: Care is and must continue to be taken to ensure safety against ERC4626 inf
 - Polygon zkEVM
 	Polygon Tweet link: https://twitter.com/GoodMorninnnng/status/1672864573362262016?s=20
    - Deployment Addresses:
-	- Vault: https://testnet-zkevm.polygonscan.com/address/0x013D706Ff9bdA75C390a4611F512ee61Ecbf9389
-  	- Strategy: https://testnet-zkevm.polygonscan.com/address/0x8a53ca850564ae980bcf43a679d11cfe90fc418b
-  	- Vault Token Wrapper: https://testnet-zkevm.polygonscan.com/address/0x60d09097d21Aca152e6825EFEADE395609F6a025
-	- Vault Governor: https://testnet-zkevm.polygonscan.com/address/0x572c2ea3469917c1f3a072b62a4778d8b39dbd33
-	- Note: Governance and token wrapper still need to be properly introduced to the vault-strategy pairing.
+		- Vault: https://testnet-zkevm.polygonscan.com/address/0x013D706Ff9bdA75C390a4611F512ee61Ecbf9389
+  		- Strategy: https://testnet-zkevm.polygonscan.com/address/0x8a53ca850564ae980bcf43a679d11cfe90fc418b
+  		- Vault Token Wrapper: https://testnet-zkevm.polygonscan.com/address/0x60d09097d21Aca152e6825EFEADE395609F6a025
+		- Vault Governor: https://testnet-zkevm.polygonscan.com/address/0x572c2ea3469917c1f3a072b62a4778d8b39dbd33
+		- Note: Governance and token wrapper still need to be properly introduced to the vault-strategy pairing.
 - Goerli
   - Relevant Address links located: https://www.one-tab.com/page/v5UmgDBvTcWpBYdB8goowA
 - Gnosis Chiadao
