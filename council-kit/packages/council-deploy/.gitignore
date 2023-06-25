@@ -1,0 +1,12 @@
+cache
+artifacts
+contracts
+
+# don't check in the compiled typescript factories
+compiled
+
+.env
+
+dist
+
+localhost.deployments.json

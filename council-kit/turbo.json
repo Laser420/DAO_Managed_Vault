@@ -1,0 +1,96 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
+    },
+    "build:packages": {
+      "outputs": ["dist/**"]
+    },
+    "council-ui#build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**"],
+      "env": [
+        "NEXT_PUBLIC_MAINNET_ALCHEMY_KEY",
+        "NEXT_PUBLIC_GOERLI_ALCHEMY_KEY",
+        "NEXT_PUBLIC_LOCAL_RPC_URL",
+        "NEXT_PUBLIC_COUNCIL_UI_BASE_PATH"
+      ]
+    },
+    "council-sdk-starter#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "env": ["PROVIDER_URI", "WALLET_PRIVATE_KEY", "NODE_ENV"]
+    },
+    "@council/contract-stub": {
+      "env": ["MOCK_WALLET_PRIVATE_KEY"]
+    },
+    "@council/sdk#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "env": ["PROVIDER_URI", "EXAMPLE_WALLET_PRIVATE_KEY", "NODE_ENV"]
+    },
+    "@council/deploy#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "env": [
+        "MAINNET_DEPLOYER_PRIVATE_KEY",
+        "GOERLI_DEPLOYER_PRIVATE_KEY",
+        "MAINNET_URI",
+        "GOERLI_URI",
+        "ETHERSCAN_API_KEY",
+        "VOTING_TOKEN_ADDRESS",
+        "GSC_BASE_QUORUM",
+        "GSC_LOCK_DURATION",
+        "GSC_EXTRA_VOTING",
+        "GSC_VOTING_POWER_BOUND",
+        "GSC_IDLE_DURATION",
+        "BASE_QUORUM",
+        "LOCK_DURATION",
+        "EXTRA_VOTING",
+        "MIN_PROPOSAL_POWER",
+        "WAIT_BLOCKS",
+        "TREASURY_ADDRESS",
+        "UNVESTED_VOTING_MULTIPLIER"
+      ]
+    },
+    "@council/cli": {
+      "env": [
+        "RPC_URL",
+        "WALLET_PRIVATE_KEY",
+        "CHAIN",
+        "VOTING_TOKEN_ADDRESS",
+        "VOTING_TOKEN_DECIMALS",
+        "VOTING_TOKEN_NAME",
+        "VOTING_TOKEN_SYMBOL",
+        "BASE_QUORUM",
+        "MIN_PROPOSAL_POWER",
+        "LOCK_DURATION",
+        "EXTRA_VOTING_BLOCKS",
+        "TIMELOCK_WAIT_TIME",
+        "TREASURY_ADDRESS",
+        "STALE_BLOCK_LAG",
+        "GSC_QUORUM",
+        "GSC_LOCK_DURATION",
+        "GSC_EXTRA_VOTING_BLOCKS",
+        "GSC_VOTING_POWER_BOUND",
+        "GSC_IDLE_DURATION"
+      ]
+    },
+    "@council/cli#build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "env": ["NODE_ENV"]
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "dev": {
+      "cache": false
+    },
+    "format": { "outputs": [] },
+    "format:check": { "outputs": [] }
+  }
+}
