@@ -104,6 +104,7 @@ Optional: Verify the contract on Etherscan.
 
 # Photo Album
 ![Hackathon_Tally_Screenshot](https://github.com/Laser420/DAO_Managed_Vault/assets/38286334/e6f2505a-252e-4389-b027-58dca36558de)
+![Generate Proof](scr1.png)
 ![Claiming proposal tokens](scr3.png)
 ![Tokens claimed!](scr2.png)
 
