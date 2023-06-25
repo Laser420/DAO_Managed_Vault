@@ -1,0 +1,1 @@
+forge script script/DeployAnvil.s.sol:Deploy --rpc-url "http://127.0.0.1:8545/" --sender $SENDER --private-key $WALLET_PRIVATE_KEY --broadcast -vvvv

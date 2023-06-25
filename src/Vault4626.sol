@@ -1078,7 +1078,7 @@ interface ISillyStrategy {
 pragma solidity 0.8.20;
 
 /// Im slowly using control over my own typing
-contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
+contract Vault4626 is xERC4626, ReentrancyGuard {
     using SafeTransferLib for ERC20; 
     using SafeCastLib for *;
 
@@ -1096,7 +1096,7 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
 
     uint256 MAX_INT = 2**256 - 1;
 
-    modifier isDeprecated() //If isDeprecated is true....the vault is deprecated
+    modifier isDeprecated() 
     {
         require(deprecated == false, "This vault is deprecated");
         _;
@@ -1286,6 +1286,6 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
             newVault := create(0, clone_code, 0x37)
         }
 
-        SillyVault_iHateSwans(newVault).init(_underlying, _rewardsCycleLength, _governor);
+        Vault4626(newVault).init(_underlying, _rewardsCycleLength, _governor);
     }
 }
