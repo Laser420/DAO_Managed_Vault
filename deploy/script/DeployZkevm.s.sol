@@ -18,10 +18,10 @@ contract Deploy is Script {
         console.log("Creator (owner): ", msg.sender);
 
         // Deploy guardian factory
-        Vault4626 factory = new Vault4626(0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7, 60, 0x4f2bD410B81Ea24F83D1E807511BAec204c4Cf7a);
+        Vault4626 factory = new Vault4626(0x7379a261bC347BDD445484A91648Abf4A2BDEe5E, 60, 0x4f2bD410B81Ea24F83D1E807511BAec204c4Cf7a);
         factory.addGovernor(0x7E3Ee99EC9b2aBd42c8c8504dc8195C8dc4942D0);
 
-        SillyStategyTemplate sfac = new SillyStategyTemplate(0xF6BEEeBB578e214CA9E23B0e9683454Ff88Ed2A7, address(factory));
+        SillyStategyTemplate sfac = new SillyStategyTemplate(0x7379a261bC347BDD445484A91648Abf4A2BDEe5E, address(factory));
         factory.changeStrategy(address(sfac));
 
         VaultTokenWrapped mtw = new VaultTokenWrapped(address(factory));
