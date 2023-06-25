@@ -6,6 +6,7 @@ import "forge-std/console.sol";
 import "../../src/Vault4626.sol";
 import {SillyStategyTemplate} from "../../src/Strategies/strategy.sol";
 import {VaultTokenWrapped} from "../../src/Governance/VaultTokenWrapped.sol";
+import {MyGovernor} from "../../src/Governance/MyGovernor.sol";
 
 contract Deploy is Script {
     // Test accounts from passphrase in env (not in repo)
@@ -25,9 +26,12 @@ contract Deploy is Script {
         factory.changeStrategy(address(sfac));
 
         VaultTokenWrapped mtw = new VaultTokenWrapped(address(factory));
+
+        MyGovernor mg = new MyGovernor(address(mtw), address(0));
         
         console.log("Vault4626 Factory deployed: ", address(factory));
         console.log("Strat Factory deployed: ", address(sfac));
         console.log("Vault4626 Factory deployed: ", address(mtw));
+        console.log("Vault4626 Factory deployed: ", address(mg));
     }
 }

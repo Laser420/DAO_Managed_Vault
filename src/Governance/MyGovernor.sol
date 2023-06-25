@@ -5518,8 +5518,8 @@ abstract contract GovernorTimelockControl is IGovernorTimelock, Governor {
     /**
      * @dev Set the timelock.
      */
-    constructor(TimelockController timelockAddress) {
-        _updateTimelock(timelockAddress);
+    constructor(address timelockAddress) {
+        _updateTimelock(TimelockController(payable(timelockAddress)));
     }
 
     /**
@@ -5665,8 +5665,8 @@ pragma solidity ^0.8.0;
 abstract contract GovernorVotes is Governor {
     IERC5805 public immutable token;
 
-    constructor(IVotes tokenAddress) {
-        token = IERC5805(address(tokenAddress));
+    constructor(address tokenAddress) {
+        token = IERC5805(address(IVotes(tokenAddress)));
     }
 
     /**
@@ -6178,9 +6178,10 @@ pragma solidity ^0.8.2;
 contract MyGovernor is Governor, GovernorCompatibilityBravo, GovernorVotes, GovernorVotesQuorumFraction, GovernorTimelockControl
 {
 
+
     constructor(
-        IVotes _token,
-        TimelockController _timelock
+        address _token,
+        address _timelock
     ) Governor("Silly Vault Governor") GovernorVotes(_token) GovernorVotesQuorumFraction(4) GovernorTimelockControl(_timelock) {}
 
     function votingDelay() public pure override returns (uint256) {
