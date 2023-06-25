@@ -50,6 +50,7 @@ The solution allows faster iteration of yield bearing vaults and the permissionl
 - Linea
 - Polygon zkEVM
 - Goerli
+  - Relevant Address links located: https://www.one-tab.com/page/v5UmgDBvTcWpBYdB8goowA/ 
 - Gnosis Chiadao
 
 ### Using RPC
