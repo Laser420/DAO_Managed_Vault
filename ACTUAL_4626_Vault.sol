@@ -1062,6 +1062,9 @@ interface ISillyStrategy {
 
     //Only callable by the vault
     function enterPosition() external;
+
+    //Withdraws a particular amount from the strategy...
+    function withdrawParticular(uint256 amount) external;
 }
 
 // File contracts/v2/core/SSGEth.sol
@@ -1171,6 +1174,8 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
         address receiver,
         address owner
     ) public override andSync isDeprecated returns (uint256 shares) {
+        require( assets <= maxWithdraw(msg.sender)); //Make sure they arent trying to withdraw more
+        strategyInterface.withdrawParticular(assets); //withdraw from strategy
         return super.withdraw(assets, receiver, owner);
     }
 
@@ -1180,6 +1185,8 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
         address receiver,
         address owner
     ) public override andSync isDeprecated returns (uint256 assets) {
+        require( shares <= maxRedeem(msg.sender)); //Make sure they arent trying to withdraw more
+        strategyInterface.withdrawParticular(convertToAssets(shares)); //withdraw from vault
         return super.redeem(shares, receiver, owner);
     }
 
@@ -1212,7 +1219,8 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
         if (timestamp < rewardsCycleEnd) revert SyncError();
 
         //talk to strategy and gets money back temporary 
-        transferFundsBackFromStrategy();
+        //*Probably dont need this because we can withdraw particular amounts...
+        //transferFundsBackFromStrategy();
         
         //Continue the math for shares...
         uint256 storedTotalAssets_ = storedTotalAssets;
@@ -1231,7 +1239,7 @@ contract SillyVault_iHateSwans is xERC4626, ReentrancyGuard {
         lastSync = timestamp;
         rewardsCycleEnd = end;
 
-        //Sends all funds back into the strategy
+        //Sends all funds into the strategy
         transferFundsToStrategy();
 
         emit NewRewardsCycle(end, nextRewards);
