@@ -22,28 +22,29 @@ And for slightly more experiemced users to create new vaults with alpha and rese
 - No incentives to truly share alpha
 - Yield bearing protocols can often rug/move tokens on behalf of users
 
-# Solution
+# Solutions
 
-- Our ERC4626 features a simple vault and underlying strategy.
+- Our systems features a simple ERC4626 vault and underlying strategy pairing.
 - Each vault has just 1 strategy
-- Real users can create new vaults, strategies using the clone function
-- Thus sharing alpha
-- And earning part of the earned yield as incentives
+- Real users can create new vaults and strategies using the clone function
+- This allows for sharing of alpha
+- Alongside earning part of the yield as incentives
 
-The solution allows faster iteration of yield bearing vaults and the permissionless creation of these even in the absence of core-devs maintaining the protocol. 
+The solution allows for faster iteration of yield bearing vaults and permissionless creation even in the absence of core-devs maintaining the protocol. 
 
 # Impl
 
 ![](daoframework.drawio.png)
 
 1. Frontend uses sismo and/or world coin starter kits
-2. It uses sismo connect or idkit to verify a user is real
-3. If the user is unique, we mint a governance token
-4. The token is accepted in a Compound GovernorBravo contract to create proposals via Tally/Delv
-5. Once the proposal passes, calldata in it is executed, mainly of type `clone(...)` to create new vaults and strategies with respective underlying and deposit contracts (Compound / crv)
-6. Users can then interact with the new vault and deposit the underlying token
-7. On deposit/withdraw andSync is called which reports losses/gains from the strategy to the vault
+2. Sismo connect or idkit is used to verify if a user is real
+3. Unique users are allowed to mint a governance token
+4. The token is accepted in a Compound GovernorBravo compliant contract to create proposals via Tally/Delv
+5. Once the proposal passes, calldata in it is executed, this would typically be of type `clone(...)` which would create new vaults and strategies with different underlying and deposit contracts (Compound / crv)
+6. Users could then interact with these new vaults and deposit the given underlying token
+7. On deposit/withdraw andSync is called, which reports losses/gains from the strategy to the vault while updating share math accurately
 8. Users can withdraw the underlying token + interest at the end of the reward cycle length.
+Note: Care is and must continue to be taken to ensure safety against ERC4626 inflation attacks.
 
 # Projects Incorporated:
 ### Deployed on
