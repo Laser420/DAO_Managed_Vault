@@ -45,6 +45,24 @@ The solution allows faster iteration of yield bearing vaults and the permissionl
 7. On deposit/withdraw andSync is called which reports losses/gains from the strategy to the vault
 8. Users can withdraw the underlying token + interest at the end of the reward cycle length.
 
+# Projects Incorporated:
+### Deployed on
+- Linea
+- Polygon zkEVM
+
+### Using RPC
+- Quicknode
+
+### Deployed To
+- Gnosis Chiadao
+
+### Deployed With
+- Delv
+
+### Credentials Powered By
+- Sismo
+- Worldcoin
+
 # Dev Docs
 ## Deployment Stages
 1. Deploy new instance of ACTUAL4626 - 0x6637867dF88Ae4a24C090E5B03C6255a1f5b51cE
@@ -64,24 +82,6 @@ Optional: Verify the strategy on etherscan.
       Approve the vault on the underlying.
       Deposit into the vault and receive share tokens.
 Optional: Call syncRewards on the ACTUAL4626 to simply move assets from the vault into the strategy.
-
-# Projects Incorporated:
-### Deployed on
-- Linea
-- Polygon zkEVM
-
-### Using RPC
-- Quicknode
-
-### Deployed To
-- Gnosis Chiadao
-
-### Deployed With
-- Delv
-
-### Credentials Powered By
-- Sismo
-- Worldcoin
 
 5. Deploy a vaultTokenWrapperFlattened - 0x261ED1EAE1829e18728088cc72C9459cD551AC2F
 	Constructor:
