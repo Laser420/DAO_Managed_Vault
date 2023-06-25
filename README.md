@@ -100,4 +100,8 @@ Optional: Verify the contract on Etherscan.
 
 8. Create the governor on tally or Delv using the right addresses n whatnot...
 9. Add the given governor to the list of pre-approved governors....
-10. The DAO can then vote to remove the EOA governor from the list. 
+10. The DAO can then vote to remove the EOA governor from the list.
+
+# Photo Album
+![Hackathon_Tally_Screenshot](https://github.com/Laser420/DAO_Managed_Vault/assets/38286334/e6f2505a-252e-4389-b027-58dca36558de)
+
