@@ -67,13 +67,13 @@ Optional: Call syncRewards on the ACTUAL4626 to simply move assets from the vaul
 
 # Projects Incorporated:
 
-Linea
-Polygon zkEVM
-Gnosis Chiadao
-Quicknode
-Delv
-Worldcoin
-Sismo
+- Linea
+- Polygon zkEVM
+- Gnosis Chiadao
+- Quicknode
+- Delv
+- Worldcoin
+- Sismo
 
 5. Deploy a vaultTokenWrapperFlattened - 0x261ED1EAE1829e18728088cc72C9459cD551AC2F
 	Constructor:
