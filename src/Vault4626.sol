@@ -1257,7 +1257,7 @@ contract Vault4626 is xERC4626, ReentrancyGuard {
         if (timestamp < rewardsCycleEnd) revert SyncError();
 
         //talk to strategy and gets money back temporary 
-        //*Probably dont need this because we can withdraw particular amounts...
+        // we still need this
         transferFundsBackFromStrategy();
         
         //Continue the math for shares...
