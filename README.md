@@ -41,3 +41,41 @@ The solution allows faster iteration of yield bearing vaults and the permissionl
 6. Users can then interact with the new vault and deposit the underlying token
 7. On deposit/withdraw andSync is called which reports losses/gains from the strategy to the vault
 8. Users can withdraw the underlying token + interest at the end of the reward cycle length.
+
+# Dev Docs
+## Deployment Stages
+1. Deploy new instance of ACTUAL4626 - 0x6637867dF88Ae4a24C090E5B03C6255a1f5b51cE
+   	  Constructor:
+	     Set the underlying, Set the rewards cycle
+	     Governor is temporarily set to my EOA
+Optional: Verify the vault on etherscan.
+
+2. Deploy a strategy - 0x5d309a073505991beDB1cc14Af5C189B092d2104
+	  Constructor:
+	   Set the underlying
+	   Set the vault to be the ACTUAL2626 addy
+Optional: Verify the strategy on etherscan.
+
+3. Set the strategy of the Actual4626 to be whatever strategy address is being used.
+     Constructor:
+      Approve the vault on the underlying.
+      Deposit into the vault and receive share tokens.
+Optional: Call syncRewards on the ACTUAL4626 to simply move assets from the vault into the strategy.
+
+4. Deploy a vaultTokenWrapperFlattened - 0x261ED1EAE1829e18728088cc72C9459cD551AC2F
+	Constructor:
+	 Use the ACTUAL4626 Vault receipt token as the underlying token to wrap.
+Optional: Verify the contract on Etherscan.
+
+5. Approve the vaultTokenWrapperFlattened on the ACTUAL4626.
+   
+6. Wrap the vault receipt token into the vault token wrapper by calling depositFor.
+
+7. Deploy vault_governor_flattened 
+	Constructor:
+	 Set the underlying to be the wrapped vault token.
+	 Set the timelock to be 0x00000s0s0s0s0s0s0s0FUCK
+  Verify contract if neccessary 
+
+8. Create the governor on tally using the right addresses n whatnot...
+9. Call changeGovernor on Etherscan using the EOA to change the vault governor to the governor contract
