@@ -48,6 +48,7 @@ Note: Care is and must continue to be taken to ensure safety against ERC4626 inf
 
 # Projects Incorporated:
 ### Deployed on
+- NEAR BOS https://near.org/chimera_defi.near/widget/Daovault
 - Linea
 - Polygon zkEVM
 - Goerli
