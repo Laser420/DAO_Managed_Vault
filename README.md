@@ -49,12 +49,11 @@ The solution allows faster iteration of yield bearing vaults and the permissionl
 ### Deployed on
 - Linea
 - Polygon zkEVM
+- Goerli
+- Gnosis Chiadao
 
 ### Using RPC
 - Quicknode
-
-### Deployed To
-- Gnosis Chiadao
 
 ### Deployed With
 - Delv
